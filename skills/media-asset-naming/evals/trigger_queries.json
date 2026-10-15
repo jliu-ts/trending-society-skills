@@ -1,0 +1,46 @@
+[
+  {
+    "query": "how should I name this Runway generation so I can find it later?",
+    "should_trigger": true
+  },
+  {
+    "query": "file this generation into my skincare project library with a sidecar",
+    "should_trigger": true
+  },
+  {
+    "query": "organize my Runway assets into an asset library with a naming convention",
+    "should_trigger": true
+  },
+  {
+    "query": "grab the approved asset for the lip-sync workflow from the manifest",
+    "should_trigger": true
+  },
+  {
+    "query": "version this render, I made a better take of the master sheet",
+    "should_trigger": true
+  },
+  {
+    "query": "do I need content credentials or provenance on this AI ad before posting to the EU?",
+    "should_trigger": true
+  },
+  {
+    "query": "generate a front-facing portrait of my clone on Runway",
+    "should_trigger": false
+  },
+  {
+    "query": "rename the variables in this TypeScript file to camelCase",
+    "should_trigger": false
+  },
+  {
+    "query": "which ComfyUI model should I use for motion control?",
+    "should_trigger": false
+  },
+  {
+    "query": "what naming convention should my git branches follow?",
+    "should_trigger": false
+  },
+  {
+    "query": "write the Instagram caption for this clone ad",
+    "should_trigger": false
+  }
+]

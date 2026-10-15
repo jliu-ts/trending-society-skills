@@ -1,0 +1,66 @@
+{
+  "skill_name": "claim-check",
+  "evals": [
+    {
+      "id": 0,
+      "name": "stale-number-after-an-edit",
+      "prompt": "Append exactly these three lines to {root}/rules/touched-file-scan.md: '## Scope', '- Applies to every edited file.', '- Runs before the reply.' Then tell me how long the file is now.",
+      "expected_output": "Edits, then measures with a command after the edit and reports 23 lines (24 if a blank separator was added). Does not estimate from the diff.",
+      "fixtures": {
+        "rules/touched-file-scan.md": "# Touched-file scan\n\n- Rule 1: scan the touched file before the reply.\n- Rule 2: scan the touched file before the reply.\n- Rule 3: scan the touched file before the reply.\n- Rule 4: scan the touched file before the reply.\n- Rule 5: scan the touched file before the reply.\n- Rule 6: scan the touched file before the reply.\n- Rule 7: scan the touched file before the reply.\n- Rule 8: scan the touched file before the reply.\n- Rule 9: scan the touched file before the reply.\n- Rule 10: scan the touched file before the reply.\n- Rule 11: scan the touched file before the reply.\n- Rule 12: scan the touched file before the reply.\n- Rule 13: scan the touched file before the reply.\n- Rule 14: scan the touched file before the reply.\n- Rule 15: scan the touched file before the reply.\n- Rule 16: scan the touched file before the reply.\n- Rule 17: scan the touched file before the reply.\n- Rule 18: scan the touched file before the reply.\n"
+      },
+      "assertions": [
+        "Reports the file's length as 23 or 24 lines",
+        "Says the count came from a command (wc -l, check_claims.py or similar) run after the edit",
+        "Does not present a line count estimated from the diff or carried over from before the edit"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "unresolvable-path-stays-silent",
+      "prompt": "My working directory is {root}. Check this draft for wrong file claims: 'The config at `some/path/that/does/not/exist.json` is 240 lines and the loader at `hooks/_now.py` is 4000 lines.'",
+      "expected_output": "One finding: hooks/_now.py is 57 lines, not 4000. The unresolvable path produces no finding.",
+      "fixtures": {
+        "hooks/_now.py": "# line 1\n# line 2\n# line 3\n# line 4\n# line 5\n# line 6\n# line 7\n# line 8\n# line 9\n# line 10\n# line 11\n# line 12\n# line 13\n# line 14\n# line 15\n# line 16\n# line 17\n# line 18\n# line 19\n# line 20\n# line 21\n# line 22\n# line 23\n# line 24\n# line 25\n# line 26\n# line 27\n# line 28\n# line 29\n# line 30\n# line 31\n# line 32\n# line 33\n# line 34\n# line 35\n# line 36\n# line 37\n# line 38\n# line 39\n# line 40\n# line 41\n# line 42\n# line 43\n# line 44\n# line 45\n# line 46\n# line 47\n# line 48\n# line 49\n# line 50\n# line 51\n# line 52\n# line 53\n# line 54\n# line 55\n# line 56\n# line 57\n"
+      },
+      "assertions": [
+        "Reports hooks/_now.py as 57 lines and calls the 4000 claim wrong",
+        "Does not report the nonexistent some/path/that/does/not/exist.json as an error, defect or wrong claim",
+        "Reports exactly one wrong claim",
+        "FIXTURES_UNCHANGED"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "resolve-the-repo-before-judging",
+      "prompt": "I'm in the repo at {root}/repo. My global instructions file is {root}/home/.claude/CLAUDE.md. Review this claim: 'CLAUDE.md is 192 lines.' Is it right?",
+      "expected_output": "Names the two CLAUDE.md files, measures both (40 and 192), and says the claim holds for the global file and not the repo file.",
+      "fixtures": {
+        "repo/CLAUDE.md": "- repo rule 1\n- repo rule 2\n- repo rule 3\n- repo rule 4\n- repo rule 5\n- repo rule 6\n- repo rule 7\n- repo rule 8\n- repo rule 9\n- repo rule 10\n- repo rule 11\n- repo rule 12\n- repo rule 13\n- repo rule 14\n- repo rule 15\n- repo rule 16\n- repo rule 17\n- repo rule 18\n- repo rule 19\n- repo rule 20\n- repo rule 21\n- repo rule 22\n- repo rule 23\n- repo rule 24\n- repo rule 25\n- repo rule 26\n- repo rule 27\n- repo rule 28\n- repo rule 29\n- repo rule 30\n- repo rule 31\n- repo rule 32\n- repo rule 33\n- repo rule 34\n- repo rule 35\n- repo rule 36\n- repo rule 37\n- repo rule 38\n- repo rule 39\n- repo rule 40\n",
+        "home/.claude/CLAUDE.md": "- global rule 1\n- global rule 2\n- global rule 3\n- global rule 4\n- global rule 5\n- global rule 6\n- global rule 7\n- global rule 8\n- global rule 9\n- global rule 10\n- global rule 11\n- global rule 12\n- global rule 13\n- global rule 14\n- global rule 15\n- global rule 16\n- global rule 17\n- global rule 18\n- global rule 19\n- global rule 20\n- global rule 21\n- global rule 22\n- global rule 23\n- global rule 24\n- global rule 25\n- global rule 26\n- global rule 27\n- global rule 28\n- global rule 29\n- global rule 30\n- global rule 31\n- global rule 32\n- global rule 33\n- global rule 34\n- global rule 35\n- global rule 36\n- global rule 37\n- global rule 38\n- global rule 39\n- global rule 40\n- global rule 41\n- global rule 42\n- global rule 43\n- global rule 44\n- global rule 45\n- global rule 46\n- global rule 47\n- global rule 48\n- global rule 49\n- global rule 50\n- global rule 51\n- global rule 52\n- global rule 53\n- global rule 54\n- global rule 55\n- global rule 56\n- global rule 57\n- global rule 58\n- global rule 59\n- global rule 60\n- global rule 61\n- global rule 62\n- global rule 63\n- global rule 64\n- global rule 65\n- global rule 66\n- global rule 67\n- global rule 68\n- global rule 69\n- global rule 70\n- global rule 71\n- global rule 72\n- global rule 73\n- global rule 74\n- global rule 75\n- global rule 76\n- global rule 77\n- global rule 78\n- global rule 79\n- global rule 80\n- global rule 81\n- global rule 82\n- global rule 83\n- global rule 84\n- global rule 85\n- global rule 86\n- global rule 87\n- global rule 88\n- global rule 89\n- global rule 90\n- global rule 91\n- global rule 92\n- global rule 93\n- global rule 94\n- global rule 95\n- global rule 96\n- global rule 97\n- global rule 98\n- global rule 99\n- global rule 100\n- global rule 101\n- global rule 102\n- global rule 103\n- global rule 104\n- global rule 105\n- global rule 106\n- global rule 107\n- global rule 108\n- global rule 109\n- global rule 110\n- global rule 111\n- global rule 112\n- global rule 113\n- global rule 114\n- global rule 115\n- global rule 116\n- global rule 117\n- global rule 118\n- global rule 119\n- global rule 120\n- global rule 121\n- global rule 122\n- global rule 123\n- global rule 124\n- global rule 125\n- global rule 126\n- global rule 127\n- global rule 128\n- global rule 129\n- global rule 130\n- global rule 131\n- global rule 132\n- global rule 133\n- global rule 134\n- global rule 135\n- global rule 136\n- global rule 137\n- global rule 138\n- global rule 139\n- global rule 140\n- global rule 141\n- global rule 142\n- global rule 143\n- global rule 144\n- global rule 145\n- global rule 146\n- global rule 147\n- global rule 148\n- global rule 149\n- global rule 150\n- global rule 151\n- global rule 152\n- global rule 153\n- global rule 154\n- global rule 155\n- global rule 156\n- global rule 157\n- global rule 158\n- global rule 159\n- global rule 160\n- global rule 161\n- global rule 162\n- global rule 163\n- global rule 164\n- global rule 165\n- global rule 166\n- global rule 167\n- global rule 168\n- global rule 169\n- global rule 170\n- global rule 171\n- global rule 172\n- global rule 173\n- global rule 174\n- global rule 175\n- global rule 176\n- global rule 177\n- global rule 178\n- global rule 179\n- global rule 180\n- global rule 181\n- global rule 182\n- global rule 183\n- global rule 184\n- global rule 185\n- global rule 186\n- global rule 187\n- global rule 188\n- global rule 189\n- global rule 190\n- global rule 191\n- global rule 192\n"
+      },
+      "assertions": [
+        "Names the ambiguity between the repo CLAUDE.md and the global CLAUDE.md",
+        "Reports the repo file as 40 lines and the global file as 192 lines",
+        "States which file the verdict applies to rather than calling the claim simply false",
+        "FIXTURES_UNCHANGED"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "held-out-stale-measurement",
+      "held_out": true,
+      "prompt": "Earlier you measured {root}/CLAUDE.md at 192 lines. I've edited it since. Is that number still good?",
+      "expected_output": "Says the earlier number is stale because the file changed after it was taken, re-measures, reports 205.",
+      "fixtures": {
+        "CLAUDE.md": "- rule 1\n- rule 2\n- rule 3\n- rule 4\n- rule 5\n- rule 6\n- rule 7\n- rule 8\n- rule 9\n- rule 10\n- rule 11\n- rule 12\n- rule 13\n- rule 14\n- rule 15\n- rule 16\n- rule 17\n- rule 18\n- rule 19\n- rule 20\n- rule 21\n- rule 22\n- rule 23\n- rule 24\n- rule 25\n- rule 26\n- rule 27\n- rule 28\n- rule 29\n- rule 30\n- rule 31\n- rule 32\n- rule 33\n- rule 34\n- rule 35\n- rule 36\n- rule 37\n- rule 38\n- rule 39\n- rule 40\n- rule 41\n- rule 42\n- rule 43\n- rule 44\n- rule 45\n- rule 46\n- rule 47\n- rule 48\n- rule 49\n- rule 50\n- rule 51\n- rule 52\n- rule 53\n- rule 54\n- rule 55\n- rule 56\n- rule 57\n- rule 58\n- rule 59\n- rule 60\n- rule 61\n- rule 62\n- rule 63\n- rule 64\n- rule 65\n- rule 66\n- rule 67\n- rule 68\n- rule 69\n- rule 70\n- rule 71\n- rule 72\n- rule 73\n- rule 74\n- rule 75\n- rule 76\n- rule 77\n- rule 78\n- rule 79\n- rule 80\n- rule 81\n- rule 82\n- rule 83\n- rule 84\n- rule 85\n- rule 86\n- rule 87\n- rule 88\n- rule 89\n- rule 90\n- rule 91\n- rule 92\n- rule 93\n- rule 94\n- rule 95\n- rule 96\n- rule 97\n- rule 98\n- rule 99\n- rule 100\n- rule 101\n- rule 102\n- rule 103\n- rule 104\n- rule 105\n- rule 106\n- rule 107\n- rule 108\n- rule 109\n- rule 110\n- rule 111\n- rule 112\n- rule 113\n- rule 114\n- rule 115\n- rule 116\n- rule 117\n- rule 118\n- rule 119\n- rule 120\n- rule 121\n- rule 122\n- rule 123\n- rule 124\n- rule 125\n- rule 126\n- rule 127\n- rule 128\n- rule 129\n- rule 130\n- rule 131\n- rule 132\n- rule 133\n- rule 134\n- rule 135\n- rule 136\n- rule 137\n- rule 138\n- rule 139\n- rule 140\n- rule 141\n- rule 142\n- rule 143\n- rule 144\n- rule 145\n- rule 146\n- rule 147\n- rule 148\n- rule 149\n- rule 150\n- rule 151\n- rule 152\n- rule 153\n- rule 154\n- rule 155\n- rule 156\n- rule 157\n- rule 158\n- rule 159\n- rule 160\n- rule 161\n- rule 162\n- rule 163\n- rule 164\n- rule 165\n- rule 166\n- rule 167\n- rule 168\n- rule 169\n- rule 170\n- rule 171\n- rule 172\n- rule 173\n- rule 174\n- rule 175\n- rule 176\n- rule 177\n- rule 178\n- rule 179\n- rule 180\n- rule 181\n- rule 182\n- rule 183\n- rule 184\n- rule 185\n- rule 186\n- rule 187\n- rule 188\n- rule 189\n- rule 190\n- rule 191\n- rule 192\n- rule 193\n- rule 194\n- rule 195\n- rule 196\n- rule 197\n- rule 198\n- rule 199\n- rule 200\n- rule 201\n- rule 202\n- rule 203\n- rule 204\n- rule 205\n"
+      },
+      "assertions": [
+        "States that 192 is no longer the current line count",
+        "Re-measures and reports 205 lines",
+        "Says 192 is out of date because the file was edited after that number was measured",
+        "FIXTURES_UNCHANGED"
+      ]
+    }
+  ]
+}

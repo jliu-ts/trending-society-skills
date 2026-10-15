@@ -1,0 +1,89 @@
+{
+  "skill_name": "media-asset-naming",
+  "note": "Converted from the evals-first draft. Generation is never re-run: prompts hand over a saved generation result or list_recent payload under {root}. Eval 3 stays held out.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "name-and-sidecar-on-mcp-generation",
+      "prompt": "I already generated a front-facing hero portrait of my clone for the 'skincare' project on Runway; the generate_image result is {root}/gen-result.json and the downloaded file is {root}/downloads/tsk_8f21c0.png. Save it into my library at {root}/library so I can find and reuse it later. Do not call Runway.",
+      "expected_output": "Names it skincare_char_ava_front_v01.png, writes a sidecar with prompt, model, taskId and refs, files it under 01_refs, and notes naming happens on download because generate_image has no name field.",
+      "fixtures": {
+        "gen-result.json": "{\n \"taskId\": \"tsk_8f21c0\",\n \"assetId\": \"ast_55e1\",\n \"model\": \"gpt-image-2\",\n \"promptText\": \"front-facing hero portrait of Ava, soft window light, neutral grey backdrop, 85mm\",\n \"ratio\": \"1024:1024\",\n \"referenceImages\": [\n  \"ref_ava_01\"\n ],\n \"url\": \"https://dnznrvs05pmza.cloudfront.net/gpt_image_2/tsk_8f21c0.png\"\n}",
+        "downloads/tsk_8f21c0.png": "placeholder image bytes\n"
+      },
+      "assertions": [
+        "Names the file skincare_char_ava_<descriptor>_v01.png, where <descriptor> is any kebab-case word such as front or front-hero",
+        "Writes or describes a JSON sidecar that records the prompt, model, Runway taskId and reference ids",
+        "Files the asset into the project's 01_refs folder",
+        "Says the naming is applied on download because the generation tool has no name parameter"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "retrieve-by-metadata-for-workflow",
+      "prompt": "Pull the approved 3/4-angle clone frame for 'spring-launch' from my library at {root}/library into a lip-sync workflow and match the look of the last shot. Do not call any generator or move files; tell me which file and which generation parameters to use.",
+      "expected_output": "Reads _manifest.json, picks v02 (status publish) not v03 (work), and uses the recorded model and prompt to match, noting seed is null.",
+      "fixtures": {
+        "library/spring-launch/_manifest.json": "{\n \"project\": \"spring-launch\",\n \"assets\": [\n  {\n   \"file\": \"01_refs/spring-launch_char_ava_34-angle_v01.png\",\n   \"category\": \"char\",\n   \"subject\": \"ava\",\n   \"descriptor\": \"34-angle\",\n   \"version\": 1,\n   \"status\": \"work\",\n   \"generation\": {\n    \"model\": \"gen4_image\",\n    \"seed\": null,\n    \"taskId\": \"tsk_a1\"\n   }\n  },\n  {\n   \"file\": \"01_refs/spring-launch_char_ava_34-angle_v02.png\",\n   \"category\": \"char\",\n   \"subject\": \"ava\",\n   \"descriptor\": \"34-angle\",\n   \"version\": 2,\n   \"status\": \"publish\",\n   \"generation\": {\n    \"model\": \"gpt-image-2\",\n    \"seed\": null,\n    \"taskId\": \"tsk_a2\",\n    \"promptText\": \"three-quarter clone portrait, dusk rim light\"\n   }\n  },\n  {\n   \"file\": \"01_refs/spring-launch_char_ava_34-angle_v03.png\",\n   \"category\": \"char\",\n   \"subject\": \"ava\",\n   \"descriptor\": \"34-angle\",\n   \"version\": 3,\n   \"status\": \"work\",\n   \"generation\": {\n    \"model\": \"gpt-image-2\",\n    \"seed\": null,\n    \"taskId\": \"tsk_a3\"\n   }\n  },\n  {\n   \"file\": \"03_shots/spring-launch_shot_ava_bus-stop_v04.mp4\",\n   \"category\": \"shot\",\n   \"subject\": \"ava\",\n   \"descriptor\": \"bus-stop\",\n   \"version\": 4,\n   \"status\": \"publish\",\n   \"generation\": {\n    \"model\": \"gen4_turbo\",\n    \"seed\": null,\n    \"taskId\": \"tsk_s4\",\n    \"promptText\": \"dusk rim light, teal shadows\"\n   }\n  }\n ]\n}"
+      },
+      "assertions": [
+        "Selects spring-launch_char_ava_34-angle_v02.png, the version with status publish",
+        "Does not select v03, the higher-numbered work version",
+        "Uses the generation model or prompt recorded in the manifest or sidecar to match the look",
+        "FIXTURES_UNCHANGED"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "provenance-on-public-publish",
+      "held_out": true,
+      "prompt": "I'm about to post this AI-generated clone ad publicly to an EU audience. Anything I need to attach?",
+      "expected_output": "Names C2PA plus the EU AI Act obligation and the durable-sidecar caveat, without overclaiming what a credential proves.",
+      "fixtures": {},
+      "assertions": [
+        "Names C2PA Content Credentials marking the media as AI-generated (digitalSourceType trainedAlgorithmicMedia or an AI-disclosure assertion)",
+        "Cites EU AI Act Article 50 machine-readable marking",
+        "Warns that platforms often strip Content Credentials, so a local sidecar or record is the durable copy",
+        "Does not claim provenance metadata proves the content is real or true"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "no-final-monotonic-version",
+      "prompt": "I made a better take of the ava master sheet ({root}/incoming/ava-better.png), save it as the final in {root}/library. Tell me the filename you'd use; do not move files yet.",
+      "expected_output": "Refuses 'final', names spring-launch_sheet_ava_master_v03.png, and explains the approved take is the highest version.",
+      "fixtures": {
+        "library/spring-launch/02_sheets/spring-launch_sheet_ava_master_v01.png": "v1\n",
+        "library/spring-launch/02_sheets/spring-launch_sheet_ava_master_v02.png": "v2\n",
+        "incoming/ava-better.png": "new take\n"
+      },
+      "assertions": [
+        "Names it spring-launch_sheet_ava_master_v03.png",
+        "Does not put the word final in the filename",
+        "Explains that the approved take is the highest version number",
+        "FIXTURES_UNCHANGED"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "reconcile-on-download-without-vision",
+      "prompt": "I just downloaded these 6 clone frames from Runway into {root}/downloads but I don't know their sizes, when they were made, or which ones belong to the same set. The list_recent payload is saved at {root}/list_recent.json. Tell me how you'd reconcile them into my library; do not open the images or move files.",
+      "expected_output": "Uses the list_recent payload via write-sidecar.py --enrich-json matched by task id, no vision; fills dims, aspectRatio, createdAt; groups by parentAssetGroupId (two sets of three); seed stays null.",
+      "fixtures": {
+        "list_recent.json": "{\n \"assets\": [\n  {\n   \"id\": \"ast_1\",\n   \"taskId\": \"tsk_r1\",\n   \"createdAt\": \"2026-10-11T18:01:00Z\",\n   \"name\": \"clone frame 1\",\n   \"url\": \"https://dnznrvs05pmza.cloudfront.net/gpt_image_2/tsk_r1.png\",\n   \"metadata\": {\n    \"size\": {\n     \"width\": 2560,\n     \"height\": 1920\n    },\n    \"aspectRatio\": \"4:3\"\n   },\n   \"parentAssetGroupId\": \"grp_A\"\n  },\n  {\n   \"id\": \"ast_2\",\n   \"taskId\": \"tsk_r2\",\n   \"createdAt\": \"2026-10-12T18:02:00Z\",\n   \"name\": \"clone frame 2\",\n   \"url\": \"https://dnznrvs05pmza.cloudfront.net/gpt_image_2/tsk_r2.png\",\n   \"metadata\": {\n    \"size\": {\n     \"width\": 2560,\n     \"height\": 1920\n    },\n    \"aspectRatio\": \"4:3\"\n   },\n   \"parentAssetGroupId\": \"grp_A\"\n  },\n  {\n   \"id\": \"ast_3\",\n   \"taskId\": \"tsk_r3\",\n   \"createdAt\": \"2026-10-10T18:03:00Z\",\n   \"name\": \"clone frame 3\",\n   \"url\": \"https://dnznrvs05pmza.cloudfront.net/gpt_image_2/tsk_r3.png\",\n   \"metadata\": {\n    \"size\": {\n     \"width\": 2560,\n     \"height\": 1920\n    },\n    \"aspectRatio\": \"4:3\"\n   },\n   \"parentAssetGroupId\": \"grp_A\"\n  },\n  {\n   \"id\": \"ast_4\",\n   \"taskId\": \"tsk_r4\",\n   \"createdAt\": \"2026-10-11T18:04:00Z\",\n   \"name\": \"clone frame 4\",\n   \"url\": \"https://dnznrvs05pmza.cloudfront.net/gpt_image_2/tsk_r4.png\",\n   \"metadata\": {\n    \"size\": {\n     \"width\": 2560,\n     \"height\": 1920\n    },\n    \"aspectRatio\": \"4:3\"\n   },\n   \"parentAssetGroupId\": \"grp_B\"\n  },\n  {\n   \"id\": \"ast_5\",\n   \"taskId\": \"tsk_r5\",\n   \"createdAt\": \"2026-10-12T18:05:00Z\",\n   \"name\": \"clone frame 5\",\n   \"url\": \"https://dnznrvs05pmza.cloudfront.net/gpt_image_2/tsk_r5.png\",\n   \"metadata\": {\n    \"size\": {\n     \"width\": 2560,\n     \"height\": 1920\n    },\n    \"aspectRatio\": \"4:3\"\n   },\n   \"parentAssetGroupId\": \"grp_B\"\n  },\n  {\n   \"id\": \"ast_6\",\n   \"taskId\": \"tsk_r6\",\n   \"createdAt\": \"2026-10-10T18:06:00Z\",\n   \"name\": \"clone frame 6\",\n   \"url\": \"https://dnznrvs05pmza.cloudfront.net/gpt_image_2/tsk_r6.png\",\n   \"metadata\": {\n    \"size\": {\n     \"width\": 2560,\n     \"height\": 1920\n    },\n    \"aspectRatio\": \"4:3\"\n   },\n   \"parentAssetGroupId\": \"grp_B\"\n  }\n ]\n}",
+        "downloads/tsk_r1.png": "placeholder image bytes 1\n",
+        "downloads/tsk_r2.png": "placeholder image bytes 2\n",
+        "downloads/tsk_r3.png": "placeholder image bytes 3\n",
+        "downloads/tsk_r4.png": "placeholder image bytes 4\n",
+        "downloads/tsk_r5.png": "placeholder image bytes 5\n",
+        "downloads/tsk_r6.png": "placeholder image bytes 6\n"
+      },
+      "assertions": [
+        "Reads sizes and dates from the list_recent payload matched by task id, not by analyzing the image pixels",
+        "Says the dimensions or aspect ratio (2560x1920, 4:3) and createdAt come from the list_recent payload (filled or planned)",
+        "Groups the frames into sets by parentAssetGroupId",
+        "FIXTURES_UNCHANGED"
+      ]
+    }
+  ]
+}

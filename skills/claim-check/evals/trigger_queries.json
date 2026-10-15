@@ -1,0 +1,42 @@
+[
+  {
+    "query": "how many lines is rules/always/touched-file-scan.md now that you edited it?",
+    "should_trigger": true
+  },
+  {
+    "query": "check my claims in this draft against the repo, it says CLAUDE.md is 192 lines and hooks/_now.py is 4000",
+    "should_trigger": true
+  },
+  {
+    "query": "you said that file was 165 lines earlier, is that still accurate after the edit?",
+    "should_trigger": true
+  },
+  {
+    "query": "did you verify that count of 10 eval files or did you guess it?",
+    "should_trigger": true
+  },
+  {
+    "query": "that number looks wrong, re-measure the line count of scripts/check_claims.py before you quote it",
+    "should_trigger": true
+  },
+  {
+    "query": "fact-check this LinkedIn post's stats about AI adoption against primary sources",
+    "should_trigger": false
+  },
+  {
+    "query": "count the words in this paragraph I pasted and tell me if it fits LinkedIn's limit",
+    "should_trigger": false
+  },
+  {
+    "query": "is it true that the EU AI Act Article 50 applies from August 2026?",
+    "should_trigger": false
+  },
+  {
+    "query": "lint this skill package and tell me what fails",
+    "should_trigger": false
+  },
+  {
+    "query": "refactor check_claims.py to also parse markdown tables",
+    "should_trigger": false
+  }
+]
